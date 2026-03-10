@@ -170,6 +170,30 @@
                 endBs.value = '';
             }
         });
+
+        // Setup timeline date conversion (AD to BS only, no datepicker)
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('timeline-date-ad')) {
+                const adInput = e.target;
+                const row = adInput.closest('.timeline-row');
+                if (row) {
+                    const bsInput = row.querySelector('.timeline-date-bs');
+                    if (bsInput && adInput.value) {
+                        try {
+                            const adDate = NepaliFunctions.ConvertToDateObject(adInput.value, 'YYYY-MM-DD');
+                            const bsDate = NepaliFunctions.AD2BS(adDate);
+                            if (bsDate) {
+                                bsInput.value = NepaliFunctions.ConvertToDateFormat(bsDate, 'YYYY-MM-DD');
+                            }
+                        } catch (e) {
+                            console.error('Error converting timeline AD to BS:', e);
+                        }
+                    } else if (bsInput) {
+                        bsInput.value = '';
+                    }
+                }
+            }
+        });
     }
 
     // Start initialization when DOM is ready
