@@ -1,4 +1,7 @@
 (function() {
+    let retryCount = 0;
+    const MAX_RETRIES = 50; // Maximum 5 seconds of retries (50 * 100ms)
+    
     // Helper function to position calendar relative to a specific input field
     function positionCalendarForField(inputField) {
         const calendar = document.querySelector('.ndp-container');
@@ -27,6 +30,14 @@
     }
 
     function init() {
+        retryCount++;
+        
+        // Stop retrying after MAX_RETRIES to prevent infinite loops on pages without target fields
+        if (retryCount > MAX_RETRIES) {
+            console.warn('Date converter: Max retries reached, stopping initialization');
+            return;
+        }
+        
         // Wait for libraries to load
         if (typeof NepaliFunctions === 'undefined') {
             setTimeout(init, 100);
@@ -45,7 +56,10 @@
         const endBs = document.getElementById('id_end_date_bs');
 
         if (!startAd || !startBs || !endAd || !endBs) {
-            setTimeout(init, 200);
+            // Only retry if we haven't exceeded max retries
+            if (retryCount <= MAX_RETRIES) {
+                setTimeout(init, 200);
+            }
             return;
         }
 
